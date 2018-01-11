@@ -37,39 +37,22 @@ def RunCommand(cmd):
   return (output, p.returncode)
 
 def FullOTA_Assertions(info):
-
-  # Create ramdisk cpio
-  inF = open(os.path.join(TARGET_DIR, "ramdisk.img"), "r")
-  outF = open(os.path.join(TARGET_DIR, "ramdisk.cpio"), "w+")
-  p = subprocess.Popen(["minigzip", "-d"], stdout=outF, stdin=inF)
-  p.communicate()
+  # create a squashfs ramdisk
+  RunCommand(["mksquashfs", os.path.join(TARGET_DIR, "root"), os.path.join(TARGET_DIR, "ramdisk.img"), "-noappend"])
 
   # create non-sparse images
   RunCommand(["simg2img", os.path.join(TARGET_DIR, "obj/PACKAGING/systemimage_intermediates/system.img"), os.path.join(TARGET_DIR, "system.img")])
 
-  info.output_zip.write(os.path.join(TARGET_DIR, "ramdisk.cpio"), "ramdisk.cpio")
+  info.output_zip.write(os.path.join(TARGET_DIR, "ramdisk.img"), "ramdisk.img")
   info.output_zip.write(os.path.join(TARGET_DIR, "system.img"), "system.img")
-  info.output_zip.write(os.path.join(TARGET_DIR, "updater.sh"), "updater.sh")
   info.output_zip.write(os.path.join(TARGET_DIR, "bml_over_mtd.sh"), "bml_over_mtd.sh")
-  info.output_zip.write(os.path.join(UTILITIES_DIR, "make_ext4fs"), "make_ext4fs")
-  info.output_zip.write(os.path.join(UTILITIES_DIR, "busybox"), "busybox")
   info.output_zip.write(os.path.join(UTILITIES_DIR, "erase_image"), "erase_image")
   info.output_zip.write(os.path.join(UTILITIES_DIR, "bml_over_mtd"), "bml_over_mtd")
   info.output_zip.write(os.path.join(UTILITIES_DIR, "flash_image"), "flash_image")
   info.output_zip.write(os.path.join(UTILITIES_DIR, "ubiupdatevol"), "ubiupdatevol")
-  info.output_zip.write(os.path.join(UTILITIES_DIR, "mksquashfs"), "mksquashfs")
 
-  info.script.AppendExtra('package_extract_file("ramdisk.cpio", "/tmp/ramdisk.cpio");')
+  info.script.AppendExtra('package_extract_file("ramdisk.img", "/tmp/ramdisk.img");')
   info.script.AppendExtra('package_extract_file("system.img", "/sdcard/system.img");')
-  info.script.AppendExtra(
-        ('package_extract_file("updater.sh", "/tmp/updater.sh");\n'
-         'run_program("/sbin/chmod", "777", "/tmp/updater.sh");'))
-  info.script.AppendExtra(
-       ('package_extract_file("make_ext4fs", "/tmp/make_ext4fs");\n'
-        'run_program("/sbin/chmod", "777", "/tmp/make_ext4fs");'))
-  info.script.AppendExtra(
-        ('package_extract_file("busybox", "/tmp/busybox");\n'
-         'run_program("/sbin/chmod", "777", "/tmp/busybox");'))
   info.script.AppendExtra(
         ('package_extract_file("flash_image", "/tmp/flash_image");\n'
          'run_program("/sbin/chmod", "777", "/tmp/flash_image");'))
@@ -85,15 +68,15 @@ def FullOTA_Assertions(info):
   info.script.AppendExtra(
         ('package_extract_file("ubiupdatevol", "/tmp/ubiupdatevol");\n'
          'run_program("/sbin/chmod", "777", "/tmp/ubiupdatevol");'))
-  info.script.AppendExtra(
-        ('package_extract_file("mksquashfs", "/tmp/mksquashfs");\n'
-         'run_program("/sbin/chmod", "777", "/tmp/mksquashfs");'))
 
   info.script.AppendExtra('package_extract_file("boot.img", "/tmp/boot.img");')
-  info.script.AppendExtra('assert(run_program("/tmp/updater.sh") == 0);')
+
+  info.script.AppendExtra('assert(run_program("/tmp/ubiupdatevol", "/dev/ubi0_1", "/tmp/ramdisk.img") == 0);')
+  info.script.AppendExtra('assert(run_program("/tmp/erase_image", "boot") == 0);')
+  info.script.AppendExtra('assert(run_program("/tmp/bml_over_mtd.sh", "boot", "72", "reservoir", "4012", "/tmp/boot.img") == 0);')
 
 def FullOTA_InstallEnd(info):
-  # Remove writing boot.img from script (we do it in updater.sh)
+  # Remove writing boot.img from script (we do it manually)
   edify = info.script
   for cmd in edify.script:
     if "write_raw_image" in cmd:

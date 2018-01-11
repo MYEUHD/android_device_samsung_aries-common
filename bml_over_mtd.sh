@@ -1,4 +1,4 @@
-#!/tmp/busybox sh
+#!/sbin/sh
 #
 # Copyright (C) 2008 The Android Open-Source Project
 # Copyright (C) 2012 CyanongenMod
@@ -30,17 +30,14 @@ IMAGE=$5
 # remove old log
 rm -rf /sdcard/bml_over_mtd.log
 
-# everything is logged into /tmp/omni/bml_over_mtd.log
+# everything is logged into /sdcard/bml_over_mtd.log
 mkdir -p /sdcard
 exec >> /sdcard/bml_over_mtd.log 2>&1
 
-set -x
-export PATH=/:/sbin:/system/xbin:/system/bin:$PATH
-
-busybox cat <<EOF
+cat <<EOF
 ########################################################################################
 #
-# Flashing boot image with bml_over_mtd on `busybox date`
+# Flashing boot image with bml_over_mtd on `date`
 #
 ########################################################################################
 EOF

@@ -99,8 +99,7 @@ PRODUCT_COPY_FILES += \
 
 # Shell scripts
 PRODUCT_COPY_FILES += \
-    device/samsung/aries-common/bml_over_mtd.sh:bml_over_mtd.sh \
-    device/samsung/aries-common/updater.sh:updater.sh
+    device/samsung/aries-common/bml_over_mtd.sh:bml_over_mtd.sh
 
 # Audio
 PRODUCT_PACKAGES += \
@@ -159,15 +158,12 @@ PRODUCT_PACKAGES += \
     libsecril-compat \
     libsecril-shim
 
-# Static executables for updater.sh
+# Static executables
 PRODUCT_PACKAGES += \
     bml_over_mtd \
     setup_fs \
-    static_busybox \
     utility_erase_image \
     utility_flash_image \
-    utility_make_ext4fs \
-    utility_mksquashfs \
     utility_ubiupdatevol
 
 # Sensors
