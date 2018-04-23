@@ -74,11 +74,8 @@ WIFI_DRIVER_FW_PATH_STA     := "/vendor/firmware/fw_bcmdhd.bin"
 WIFI_DRIVER_FW_PATH_AP      := "/vendor/firmware/fw_bcmdhd_apsta.bin"
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
 
-# Dex-preoptimization to speed up first boot sequence
-ifeq ($(HOST_OS),linux)
-    WITH_DEXPREOPT := true
-    WITH_DEXPREOPT_BOOT_IMG_ONLY := true
-endif
+# Disable dex-preoptimization
+WITH_DEXPREOPT := false
 
 # Kernel source
 TARGET_KERNEL_SOURCE := kernel/samsung/aries
