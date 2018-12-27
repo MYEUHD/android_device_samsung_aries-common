@@ -201,6 +201,10 @@
     <!-- Enable multi user interface -->
     <bool name="config_enableMultiUserUI">true</bool>
 
+    <!-- Control whether Night display is available. This should only be enabled on devices
+         with HWC 2.0 or higher. -->
+    <bool name="config_nightDisplayAvailable">true</bool>
+
     <!-- Control the behavior when the user long presses the home button.
         0 - Nothing
         1 - Recent apps view in SystemUI
