@@ -25,7 +25,7 @@ on fs
     wait /sys/dev/block/179:0
     exec u:r:init:s0 root -- /lvm/sbin/lvm vgscan --mknodes --ignorelockingfailure
     exec u:r:init:s0 root -- /lvm/sbin/lvm vgchange -aly --ignorelockingfailure
-    restorecon /dev/mapper/lvpool-system
+    restorecon /dev/mapper/lvpool-cache
     restorecon /dev/mapper/lvpool-userdata
 
     mount_all /fstab.aries
